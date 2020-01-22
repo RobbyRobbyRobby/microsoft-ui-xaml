@@ -75,8 +75,19 @@ void ProgressRing::ApplyLottieAnimation()
         // ProgressRing only accounts for ActualWidth to ensure that it is always a circle
         const float diameter = static_cast<float>(ActualWidth());
         const auto size = winrt::Size({ diameter, diameter });
-        const auto foreground = Foreground().try_as<winrt::SolidColorBrush>().Color();
-        const auto background = Background().try_as<winrt::SolidColorBrush>().Color();
+
+        auto foreground = SharedHelpers::FindResource(s_DefaultForegroundThemeResourceName, winrt::Application::Current().Resources()).as<winrt::SolidColorBrush>().Color();
+        auto background = SharedHelpers::FindResource(s_DefaultBackgroundThemeResourceName, winrt::Application::Current().Resources()).as<winrt::SolidColorBrush>().Color();
+
+        if (Foreground().try_as<winrt::SolidColorBrush>())
+        {
+            foreground = Foreground().try_as<winrt::SolidColorBrush>().Color();
+        }
+        if (Background().try_as<winrt::SolidColorBrush>())
+        {
+            background = Background().try_as<winrt::SolidColorBrush>().Color();
+        }
+        
         player.Source(winrt::make<ProgressRingLoading>(StrokeThickness(), size, foreground, background));
     }
 }
@@ -108,9 +119,9 @@ winrt::Size ProgressRing::ComputeCircleSize(double thickness, double actualWidth
     const double safeThickness = std::max(thickness, static_cast<double>(0.0));
 
     // ProgressRing only accounts for ActualWidth to ensure that it is always a circle
-    const double diameter = std::max((actualWidth - safeThickness) / 2.0, 0.0);
+    const double radius = std::max((actualWidth - safeThickness) / 2.0, 0.0);
 
-    return {static_cast<float>(diameter), static_cast<float>(diameter)};
+    return {static_cast<float>(radius), static_cast<float>(radius)};
 }
 
 
